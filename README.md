@@ -1,6 +1,6 @@
-# Acquisizione dati da dispositivi USB
+# Acquisizione dati da dispositivi GESTUS via USB
 
-Script interattivo che guida il collegamento **uno alla volta** di 9 dispositivi USB, copia i file (solo le estensioni indicate) e li organizza così:
+Script interattivo che guida il collegamento **uno alla volta** di 9 dispositivi Gestus, copia i file (solo le estensioni indicate) e li organizza così:
 
 ```
 dati/
