@@ -1,0 +1,5 @@
+dati/
+_prova/
+__pycache__/
+*.pyc
+.pytest_cache/

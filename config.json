@@ -1,0 +1,23 @@
+{
+  "output_dir": "dati",
+  "source_subdir": "",
+  "extensions": [".dat"],
+  "filename_pattern": "_rec_(\\d{17})",
+  "gestus_split": "C:/Users/Andrea/Desktop/gestus_split.py",
+  "rtklib_dir": "C:/Program Files (x86)/RTKLIB_EX_2.5.0/RTKLIB_EX_2.5.0",
+  "convbin_format": "unicore",
+  "rinex_version": "3.04",
+  "wait_timeout_sec": 120,
+  "poll_interval_sec": 1,
+  "devices": [
+    { "id": "piede_destro", "label": "Piede destro", "folder": "piede_destro" },
+    { "id": "piede_sinistro", "label": "Piede sinistro", "folder": "piede_sinistro" },
+    { "id": "gamba_destra", "label": "Gamba destra", "folder": "gamba_destra" },
+    { "id": "gamba_sinistra", "label": "Gamba sinistra", "folder": "gamba_sinistra" },
+    { "id": "coscia_destra", "label": "Coscia destra", "folder": "coscia_destra" },
+    { "id": "coscia_sinistra", "label": "Coscia sinistra", "folder": "coscia_sinistra" },
+    { "id": "bacino", "label": "Bacino", "folder": "bacino" },
+    { "id": "tronco", "label": "Tronco", "folder": "tronco" },
+    { "id": "sterno", "label": "Sterno", "folder": "sterno" }
+  ]
+}
