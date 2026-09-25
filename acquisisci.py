@@ -240,6 +240,33 @@ def group_files(
     return dict(groups)
 
 
+def parse_choice_indices(choice: str, n: int) -> list[int] | None:
+    """Parse '1' o '1,2' / '1 2'. Ritorna indici 0-based in ordine di input, senza duplicati."""
+    parts = [p for p in re.split(r"[,\s]+", choice.strip()) if p]
+    if not parts:
+        return None
+    indices: list[int] = []
+    seen: set[int] = set()
+    for part in parts:
+        if not part.isdigit():
+            return None
+        num = int(part)
+        if not 1 <= num <= n:
+            return None
+        idx = num - 1
+        if idx in seen:
+            continue
+        seen.add(idx)
+        indices.append(idx)
+    return indices
+
+
+def oldest_stamp(stamps: list[RecStamp]) -> RecStamp | None:
+    if not stamps:
+        return None
+    return min(stamps, key=lambda s: (s.dt, s.ms))
+
+
 def choose_group(
     groups: dict[str, list[tuple[Path, RecStamp | None]]],
 ) -> list[tuple[Path, RecStamp | None]] | None:
@@ -263,12 +290,33 @@ def choose_group(
         if len(items) > 5:
             print(f"      ... e altri {len(items) - 5}")
     while True:
-        choice = ask("Scegli il numero della registrazione da copiare (s = salta): ")
+        choice = ask(
+            "Scegli le registrazioni da copiare (es. 1 oppure 1,2; s = salta): "
+        )
         if choice.lower() in {"s", "skip"}:
             return None
-        if choice.isdigit() and 1 <= int(choice) <= len(keys):
-            return groups[keys[int(choice) - 1]]
-        print("Scelta non valida.")
+        indices = parse_choice_indices(choice, len(keys))
+        if indices is None:
+            print("Scelta non valida. Esempio: 1 oppure 1,2")
+            continue
+        selected: list[tuple[Path, RecStamp | None]] = []
+        for i in indices:
+            selected.extend(groups[keys[i]])
+        if len(indices) > 1:
+            stamps = [s for _, s in selected if s]
+            oldest = oldest_stamp(stamps)
+            if oldest:
+                print(
+                    f"Selezionate {len(indices)} registrazioni "
+                    f"({sum(1 for _ in selected)} file); "
+                    f"cartella sessione dal più vecchio: {oldest.display()}"
+                )
+            else:
+                print(
+                    f"Selezionate {len(indices)} registrazioni "
+                    f"({sum(1 for _ in selected)} file)."
+                )
+        return selected
 
 
 def ask_session_datetime() -> datetime:
@@ -569,7 +617,7 @@ def process_device(
             if ask("Copiare comunque? [s/N]: ").lower() not in {"s", "y", "si", "sì"}:
                 return session_dir, "saltato", 0, 0
 
-        stamp = stamps[0] if stamps else None
+        stamp = oldest_stamp(stamps)
         session_dir = ensure_session(session_dir, stamp, cfg.devices, cfg.output_dir)
         dest_root = session_dir / device.folder
         copied, nbytes, dests = copy_files(chosen, root, dest_root)
@@ -651,4 +699,18 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "--self-check":
+        assert parse_choice_indices("1", 3) == [0]
+        assert parse_choice_indices("1,2", 3) == [0, 1]
+        assert parse_choice_indices("2 1", 3) == [1, 0]
+        assert parse_choice_indices("1,1,2", 3) == [0, 1]
+        assert parse_choice_indices("0", 3) is None
+        assert parse_choice_indices("1,4", 3) is None
+        assert parse_choice_indices("a,2", 3) is None
+        a = RecStamp("20260813115353148", datetime(2026, 8, 13, 11, 53, 53), 148)
+        b = RecStamp("20260813120000100", datetime(2026, 8, 13, 12, 0, 0), 100)
+        assert oldest_stamp([b, a]) is a
+        assert oldest_stamp([]) is None
+        print("self-check ok")
+    else:
+        main()

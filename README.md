@@ -63,13 +63,13 @@ Esempio: `B24354_rec_20260813115353148`
 - 17 cifre = data, ora, millisecondi
 - la cartella sessione usa data e ora **al secondo** (senza ms)
 
-Se su una USB ci sono più registrazioni (timestamp diversi), lo script le elenca e chiede quale copiare.
+Se su una USB ci sono più registrazioni (timestamp diversi), lo script le elenca e chiede quali copiare (`1` oppure `1,2`). Con più scelte, tutti i file finiscono nella cartella sessione del timestamp **più vecchio**.
 
 ## Uso
 
 1. Avvia lo script.
 2. Collega il dispositivo indicato (es. *Gamba destra (4/9)*), premi Invio.
-3. Se ci sono più file/registrazioni, scegli il numero.
+3. Se ci sono più registrazioni, scegli i numeri (`1` oppure `1,2`).
 4. Controlla il riepilogo della copia, scollega, Invio.
 5. Ripeti per gli altri dispositivi. `s` salta, `q` esce.
 
